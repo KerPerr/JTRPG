@@ -22,8 +22,8 @@ public class Player extends Character {
     public void chooseTrait() {
         GameLogic.clearConsole();
         GameLogic.printHeading("Choose a trait");
-        System.out.println("(1) " + atkUpgrades[numAtkUpgrades]);
-        System.out.println("(2) " + defUpgrades[numDefUpgrades]);
+        System.out.println("1 - " + atkUpgrades[numAtkUpgrades]);
+        System.out.println("2 - " + defUpgrades[numDefUpgrades]);
         int input = GameLogic.readInt("-> ", 2);
         GameLogic.clearConsole();
         if(input == 1) {
@@ -39,13 +39,13 @@ public class Player extends Character {
     public void getInformation() {
         GameLogic.printHeading("CHARACTER INFO");
         System.out.println(this.name + "\tHP: " + this.hp + "/" + this.maxHp);
-        GameLogic.printSeparator(20);
+        GameLogic.printSeparator();
         System.out.println("XP: " + this.xp + "\tGold: " + this.gold);
-        GameLogic.printSeparator(20);
+        GameLogic.printSeparator();
         System.out.println("# of Potions: " + this.potions);
-        GameLogic.printSeparator(20);
+        GameLogic.printSeparator();
         System.out.println("# of Rests: " + this.restLeft);
-        GameLogic.printSeparator(20);
+        GameLogic.printSeparator();
 
         if (this.numAtkUpgrades > 0) {
             System.out.println("Offensive trait: " + this.atkUpgrades[this.numAtkUpgrades - 1]);
@@ -89,5 +89,15 @@ public class Player extends Character {
     public int defend() {
         // TODO Auto-generated method stub
         return (int) (Math.random()*(xp/4 + numDefUpgrades*3 + 3) + xp/10 + numDefUpgrades*2 + numAtkUpgrades + 1);
-    }    
+    }
+
+    @Override
+    public void setIsAlive(boolean alive) {
+        super.setIsAlive(alive);
+        if(!alive) {
+            GameLogic.clearConsole();
+            GameLogic.printHeading("You died ...");
+            GameLogic.printHeading("You earned " + xp + " XP on your journey. Try to earn more next time.");
+        }
+    }
 }

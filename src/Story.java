@@ -1,9 +1,9 @@
 public class Story {
     public static void printIntro() {
         GameLogic.clearConsole();
-        GameLogic.printSeparator(30);
+        GameLogic.printSeparator();
         System.out.println("STORY");
-        GameLogic.printSeparator(30);
+        GameLogic.printSeparator();
         System.out.println("BLAHBLAHBLAH");
         GameLogic.toContinue();
     }
