@@ -19,4 +19,8 @@ public class Enemy extends Character {
         return (int) (Math.random()*(playerXP/4 + 1) + xp/4 + 3);
     }
     
+    @Override
+    public String toString() {
+        return this.name + " HP: " + this.hp + "/" + this.maxHp;
+    }
 }

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameLogic {
@@ -6,9 +7,29 @@ public class GameLogic {
     static Player player;
     static boolean isRunning;
     static int place = 0, act = 1;
-    static String[] places = { "Castle", "Forest", "Town" };
+    // static String[] places = { "Castle", "Forest", "Town" };
     static String[] encounters = { "Battle", "Battle", "Battle", "Shop", "Rest" };
     static String[] enemies = { "Skeleton", "Orc", "Goblin", "Mimic", "Swordman" };
+
+    static Place currentPlace;
+
+    public static ArrayList<Place> initPlaces() {
+        ArrayList<Place> places = new ArrayList<>();
+
+        Place town = new Place(0, "Town", new Enemy[] { new Enemy("Lapin", 5), new Enemy("Rat", 5),
+                new Enemy("Chat", 5), new Enemy("Chien", 5) });
+
+        Place forest = new Place(1, "Forest", new Enemy[] { new Enemy("Wolf", 15), new Enemy("Bear", 15),
+                new Enemy("Squirel", 5), new Enemy("WereWolf", 30) });
+
+        Place castle = new Place(2, "Castle", new Enemy[] { new Enemy("Mimic", 25), new Enemy("Swordman", 25),
+                new Enemy("Spearman", 25), new Enemy("Axeman", 25), new Enemy("Batman", 25) });
+
+        places.add(town);
+        places.add(forest);
+        places.add(castle);
+        return places;
+    }
 
     public static int readInt(String prompt, int userChoice) {
         int input;
@@ -26,7 +47,7 @@ public class GameLogic {
     }
 
     public static void clearConsole() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 30; i++) {
             System.out.println();
         }
     }
@@ -51,7 +72,7 @@ public class GameLogic {
 
     public static void printMenu() {
         clearConsole();
-        printHeading(places[place]);
+        printHeading(currentPlace.name);
         System.out.println("Choose an action: ");
         printSeparator(20);
         System.out.println("(1) Continue on your journey");
@@ -72,21 +93,21 @@ public class GameLogic {
     }
 
     public static void checkAct() {
-        if (player.xp >= 10 && act == 1) {
-            act = 2;
-            place = 1;
+        for (Enemy e : currentPlace.bestiaires) {
+            System.out.println(e);
+        }
+        if (player.xp >= 10) {
+            currentPlace = initPlaces().get(0);
             System.out.println("SECOND OUTRO");
             player.chooseTrait();
             System.out.println("SECOND ACT INTRO");
-        } else if (player.xp >= 50 && act == 2) {
-            act = 3;
-            place = 2;
+        } else if (player.xp >= 50) {
+            currentPlace = initPlaces().get(1);
             System.out.println("SECOND ACT OUTRO");
             player.chooseTrait();
             System.out.println("THIRD ACT INTRO");
-        } else if (player.xp >= 100 && act == 3) {
-            act = 4;
-            place = 3;
+        } else if (player.xp >= 100) {
+            currentPlace = initPlaces().get(2);
             System.out.println("THIRD ACT OUTRO");
             player.chooseTrait();
             System.out.println("FOURTH ACT INTRO");
@@ -107,13 +128,15 @@ public class GameLogic {
         int price = (int) (Math.random() * (10 + player.potions * 3) + 10 + player.potions);
         System.out.println("- Magic Potion: " + price + " gold.");
         printSeparator(15);
-        int input = answer("Do you want to buy one?", new String[]{"(1) Yes!", "(2) No thanks"});
-        /*System.out.println("Do you want to buy one?\n(1) Yes!\n(2) No thanks.");
-
-        int input = readInt("-> ", 2);*/
-        if(input == 1) {
+        int input = answer("Do you want to buy one?", new String[] { "(1) Yes!", "(2) No thanks" });
+        /*
+         * System.out.println("Do you want to buy one?\n(1) Yes!\n(2) No thanks.");
+         * 
+         * int input = readInt("-> ", 2);
+         */
+        if (input == 1) {
             clearConsole();
-            if(player.gold >= price) {
+            if (player.gold >= price) {
                 printHeading("You bought a magical potion for " + price + " gold.");
                 player.potions++;
                 player.gold -= price;
@@ -149,12 +172,14 @@ public class GameLogic {
 
                 int playerDamage = player.attack() - e.defend();
                 int enemyDamage = e.attack() - player.defend();
-                
-                System.out.println("You dealt " + (playerDamage < 0 ? 0 : playerDamage) + " damage to the " + e.name + ".");
+
+                System.out.println(
+                        "You dealt " + (playerDamage < 0 ? 0 : playerDamage) + " damage to the " + e.name + ".");
                 e.receive(playerDamage);
                 printSeparator(15);
 
-                System.out.println("The " + e.name + " dealt " + (enemyDamage < 0 ? 0 : enemyDamage) + " damage to you.");
+                System.out
+                        .println("The " + e.name + " dealt " + (enemyDamage < 0 ? 0 : enemyDamage) + " damage to you.");
                 player.receive(enemyDamage);
                 toContinue();
 
@@ -168,11 +193,11 @@ public class GameLogic {
                     System.out.println("You earned " + e.xp + " XP!");
                     boolean rest = (Math.random() * 5 + 1 <= 2.25);
                     int gold = (int) (Math.random() * e.xp);
-                    if(rest) {
+                    if (rest) {
                         player.restLeft++;
                         System.out.println("You earned an additional rest!");
                     }
-                    if(gold > 0) {
+                    if (gold > 0) {
                         player.gold += gold;
                         System.out.println("You collect " + gold + " gold from the " + e.name + "'s corpse!");
                     }
@@ -181,11 +206,11 @@ public class GameLogic {
                 }
             } else if (input == 2) {
                 clearConsole();
-                if(player.potions > 0 && player.hp < player.maxHp) {
+                if (player.potions > 0 && player.hp < player.maxHp) {
                     printHeading("Do you want to drink a potion? (" + player.potions + " left).");
                     System.out.println("(1) Yes\n(2) No, maybe later");
                     input = readInt("-> ", 2);
-                    if(input == 1) {
+                    if (input == 1) {
                         player.hp = player.maxHp;
                         clearConsole();
                         printHeading("You drank a magic potion. It restored your health back to " + player.maxHp);
@@ -231,7 +256,9 @@ public class GameLogic {
         int encounter = (int) (Math.random() * encounters.length);
         switch (encounters[encounter]) {
             case "Battle":
-                randomBattle(new Enemy(enemies[(int) (Math.random() * enemies.length)], player.xp));
+                randomBattle(currentPlace.bestiaires[
+                    (int) (Math.random() * currentPlace.bestiaires.length)
+                ]);
                 break;
             case "Rest":
                 player.rest();
@@ -250,6 +277,7 @@ public class GameLogic {
     }
 
     public static void start() {
+        currentPlace = initPlaces().get(0);
         boolean nameSet = false;
         String name;
         clearConsole();
@@ -291,7 +319,7 @@ public class GameLogic {
 
     static void gameLoop() {
         while (isRunning) {
-            printMenu();            
+            printMenu();
             int input = readInt("-> ", 3);
             switch (input) {
                 case 1:
