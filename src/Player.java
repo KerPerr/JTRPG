@@ -1,11 +1,19 @@
+import java.util.ArrayList;
+
+import Items.Consomable;
+import Items.Heal;
+import Items.Item;
+
 public class Player extends Character {
 
     int numAtkUpgrades, numDefUpgrades;
 
-    int gold, restLeft, potions;
+    int gold, restLeft;
 
     String[] atkUpgrades = { "Strength", "Power", "Might", "Godlike" };
     String[] defUpgrades = { "Heavy Bones", "Stoneskin", "Scale Armor", "Holy Aura" };
+
+    ArrayList<Item> items = new ArrayList<>();
 
     public Player(String name) {
         super(name, 100, 0);
@@ -14,7 +22,7 @@ public class Player extends Character {
 
         this.gold = 5;
         this.restLeft = 1;
-        this.potions = 0;
+        //this.items.add(new Consomable("Potion HP", new Heal(), 1));
 
         chooseTrait();
     }
@@ -46,13 +54,25 @@ public class Player extends Character {
         GameLogic.toContinue();
     }
 
+    public Item getItem(String name) {
+        return items.stream()
+        .filter(i -> name.equals(i.name))
+        .findAny()
+        .orElse(null);
+    }
+
     public void getInformation() {
         GameLogic.printHeading("CHARACTER INFO");
         System.out.println(this.name + "\tHP: " + this.hp + "/" + this.maxHp);
         GameLogic.printSeparator(20);
         System.out.println("XP: " + this.xp + "\tGold: " + this.gold);
         GameLogic.printSeparator(20);
-        System.out.println("# of Potions: " + this.potions);
+        Item potions = items.stream()
+        .filter(i -> "Potion HP".equals(i.name))
+        .findAny()
+        .orElse(null);
+
+        System.out.println("# of Potions: " + potions.quantite);
         GameLogic.printSeparator(20);
         System.out.println("# of Rests: " + this.restLeft);
         GameLogic.printSeparator(20);

@@ -1,8 +1,17 @@
+import Items.Item;
+
 public class Place {
     String name;
     int index;
     Enemy[] bestiaires;
-    String[] encounters = {"Battle", "Battle", "Battle", "Rest", "Shop"};
+    String[] encounters;
+
+    public Place(String name, int index, Enemy[] bestiaires, String[] rencontres) {
+        this.name = name;
+        this.index = index;
+        this.bestiaires = bestiaires;
+        this.encounters = rencontres;
+    }
 
     public Place(String name, int index, Enemy[] bestiaires) {
         this.name = name;
@@ -36,14 +45,9 @@ public class Place {
                 //e.receive(playerDamage);
                 GameLogic.printSeparator(15);
 
-                System.out.println("The " + e.name + " dealt " + player.receive(enemyDamage) + " damage to you.");
-                //player.receive(enemyDamage);
+                System.out.println("The " + e.name + " dealt " + (enemyDamage < 0 ? 0 : enemyDamage) + " damage to you.");
+                player.receive(enemyDamage);
                 GameLogic.toContinue();
-
-                // if (!player.isAlive) {
-                //     GameLogic.playerDied();
-                //     break;
-                // } 
                 if (!e.isAlive) {
                     GameLogic.clearConsole();
                     GameLogic.printHeading("You defeated the " + e.name + "!");
@@ -64,13 +68,15 @@ public class Place {
                 }
             } else if (input == 2) {
                 GameLogic.clearConsole();
-                if(player.potions > 0 && player.hp < player.maxHp) {
-                    GameLogic.printHeading("Do you want to drink a potion? (" + player.potions + " left).");
+                Item potions = player.getItem("Potion HP");
+                if(potions.quantite > 0 && player.hp < player.maxHp) {
+                    GameLogic.printHeading("Do you want to drink a potion? (" + player.getItem("Potion HP").quantite + " left).");
                     System.out.println("(1) Yes\n(2) No, maybe later");
                     input = GameLogic.readInt("-> ", 2);
                     if(input == 1) {
                         player.hp = player.maxHp;
                         GameLogic.clearConsole();
+                        potions.quantite--;
                         GameLogic.printHeading("You drank a magic potion. It restored your health back to " + player.maxHp);
                         GameLogic.toContinue();
                     }
@@ -91,22 +97,35 @@ public class Place {
                         System.out.println("You took " + (damage < 0 ? 0 : damage) + " damage!");
                         player.receive(damage);
                         GameLogic.toContinue();
-                        // if (!player.isAlive) {
-                        //     GameLogic.playerDied();
-                        // }
                     }
                 } else {
                     GameLogic.printHeading("YOU CANNOT ESCAPE THE EVIL EMPEROR !!");
                     int damage = e.attack();
                     System.out.println("You took " + (damage < 0 ? 0 : damage) + " damage!");
                     player.receive(damage);
-                    // GameLogic.toContinue();
-                    // if (!player.isAlive) {
-                    //     GameLogic.playerDied();
-                    // }
                     GameLogic.toContinue();
                 }
             }
+        }
+    }
+
+    public void randomEncounter(Player player) {
+        int encounter = (int) (Math.random() * encounters.length);
+        switch (encounters[encounter]) {
+            case "Battle":
+                this.randomBattle(player);
+                break;
+            case "Rest":
+                player.rest();
+                break;
+            case "Chest":
+                int gold = (int) (Math.random() * (5 - 1 + 1) + 1);
+                System.out.println("You found a chest, you got " + gold + "!");
+                player.gold += gold;
+                break;
+            default:
+                GameLogic.shop();
+                break;
         }
     }
 

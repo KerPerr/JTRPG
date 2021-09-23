@@ -1,34 +1,36 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import Items.Item;
+
 public class GameLogic {
     static Scanner scan = new Scanner(System.in);
 
     static Player player;
     static boolean isRunning;
     static int place = 0;
-    static String[] encounters = { "Battle", "Battle", "Battle", "Shop", "Battle" };
 
     public static ArrayList<Place> initPlaces() {
+
         ArrayList<Place> places = new ArrayList<>();
 
-        Place town = new Place("Town", 0, new Enemy[]{
+        Place town = new Place("Town", 0, new Enemy[] {
             new Enemy("Rat", 10),
-            new Enemy("Little boy", 10)
-        });
+            new Enemy("Little boy",10)
+        }, new String[]{"Shop", "Chest", "Battle"});
 
-        Place forest = new Place("Forest", 1, new Enemy[]{
+        Place forest = new Place("Forest", 1, new Enemy[] {
             new Enemy("Wolf", 20),
-            new Enemy("WereWolf", 50),
-        });
+            new Enemy("WereWolf", 50)
+        }, new String[]{"Shop", "Rest", "Battle", "Battle"});
 
-        Place castle = new Place("Castle", 2, new Enemy[]{
+        Place castle = new Place("Castle", 2, new Enemy[] {
             new Enemy("Swordman", 30),
             new Enemy("Spearman", 30),
-            new Enemy("Mimic", 70),
-        });
+            new Enemy("Mimic", 70)
+        }, new String[]{"Battle", "Battle", "Battle", "Shop"});
 
-        Place throne = new Place("Throne", 3, new Enemy[]{
+        Place throne = new Place("Throne", 3, new Enemy[] {
             new Enemy("EVIL EMPEROR", 300)
         });
 
@@ -76,7 +78,6 @@ public class GameLogic {
     public static void toContinue() {
         System.out.println("\nEnter anything to continue ...");
         System.out.println(scan.next().compareTo("\r"));
-        //System.out.println(scan.nextLine().compareTo("\r"));
     }
 
     public static void printMenu() {
@@ -89,52 +90,6 @@ public class GameLogic {
         System.out.println("(3) Exit Game");
     }
 
-    public static void characterInfo() {
-        clearConsole();
-        player.getInformation();
-        toContinue();
-    }
-
-    public static void checkAct() {
-        if (player.xp >= 10 && place == 0) {
-            place = 1;
-            System.out.println("SECOND OUTRO");
-            player.chooseTrait();
-            System.out.println("SECOND ACT INTRO");
-        } else if (player.xp >= 50 && place == 1) {
-            place = 2;
-            System.out.println("SECOND ACT OUTRO");
-            player.chooseTrait();
-            System.out.println("THIRD ACT INTRO");
-        } else if (player.xp >= 100 && place == 2) {
-            place = 3;
-            System.out.println("THIRD ACT OUTRO");
-            player.chooseTrait();
-            System.out.println("FOURTH ACT INTRO");
-            finalBattle();
-        }
-    }
-
-    public static void shop() {
-        clearConsole();
-        printHeading("You meet a mysterious stranger.\nHe offers you something:");
-        int price = (int) (Math.random() * (10 + player.potions * 3) + 10 + player.potions);
-        System.out.println("- Magic Potion: " + price + " gold.");
-        printSeparator(15);
-        int input = answer("Do you want to buy one?", new String[]{"(1) Yes!", "(2) No thanks"});
-        if(input == 1) {
-            clearConsole();
-            if(player.gold >= price) {
-                printHeading("You bought a magical potion for " + price + " gold.");
-                player.potions++;
-                player.gold -= price;
-            } else {
-                printHeading("You don't have enought gold to buy this...");
-            }
-            toContinue();
-        }
-    }
-
     public static int answer(String question, String[] responses) {
         System.out.println(question);
         for (int i = 0; i < responses.length; i++) {
@@ -142,28 +97,6 @@ public class GameLogic {
         }
         int input = readInt("-> ", responses.length);
         return input;
-    }
-
-    public static void randomEncounter() {
-        int encounter = (int) (Math.random() * encounters.length);
-        switch (encounters[encounter]) {
-            case "Battle":
-                initPlaces().get(place).randomBattle(player);
-                break;
-            case "Rest":
-                player.rest();
-                break;
-            default:
-                shop();
-                break;
-        }
-    }
-
-    public static void continueJourney() {
-        checkAct();
-        if (place != 3) {
-            randomEncounter();
-        }
     }
 
     public static void start() {
@@ -208,19 +141,76 @@ public class GameLogic {
 
     static void gameLoop() {
         while (isRunning) {
-            printMenu();            
+            printMenu();
             int input = readInt("-> ", 3);
             switch (input) {
                 case 1:
                     continueJourney();
                     break;
                 case 2:
-                    characterInfo();
+                    clearConsole();
+                    player.getInformation();
+                    toContinue();
                     break;
                 default:
                     isRunning = false;
                     break;
             }
+        }
+    }
+
+    /**
+     * TO MOVE
+     */
+
+    public static void shop() {
+        clearConsole();
+        printHeading("You meet a mysterious stranger.\nHe offers you something:");
+        Item potions = player.items.stream()
+        .filter(i -> "Potion HP".equals(i.name))
+        .findAny()
+        .orElse(null);
+        int price = (int) (Math.random() * (10 + potions.quantite * 3) + 10 + potions.quantite);
+        System.out.println("- Magic Potion: " + price + " gold.");
+        printSeparator(15);
+        int input = answer("Do you want to buy one?", new String[] { "(1) Yes!", "(2) No thanks" });
+        if (input == 1) {
+            clearConsole();
+            if (player.gold >= price) {
+                printHeading("You bought a magical potion for " + price + " gold.");
+                potions.quantite++;
+                player.gold -= price;
+            } else {
+                printHeading("You don't have enought gold to buy this...");
+            }
+            toContinue();
+        }
+    }
+
+    public static void checkAct() {
+        if (player.xp >= 10 && place == 0) {
+            place = 1;
+            System.out.println("SECOND OUTRO");
+            player.chooseTrait();
+            System.out.println("SECOND ACT INTRO");
+        } else if (player.xp >= 50 && place == 1) {
+            place = 2;
+            System.out.println("SECOND ACT OUTRO");
+            player.chooseTrait();
+            System.out.println("THIRD ACT INTRO");
+        } else if (player.xp >= 100 && place == 2) {
+            place = 3;
+            System.out.println("THIRD ACT OUTRO");
+            player.chooseTrait();
+            System.out.println("FOURTH ACT INTRO");
+            finalBattle();
+        }
+    }
+
+    public static void continueJourney() {
+        checkAct();
+        if (place != 3) {
+            initPlaces().get(place).randomEncounter(player);
         }
     }
 }
