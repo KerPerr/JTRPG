@@ -1,12 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// enum Type {
-//     Misc,
-//     Armor,
-//     Weapon,
-//     Consumable
-// }
+import Items.Item;
 
 public class GameLogic {
     static Scanner scan = new Scanner(System.in);
@@ -14,26 +9,36 @@ public class GameLogic {
     static Player player;
     static boolean isRunning;
     static int place = 0;
-    static String[] encounters = { "Battle", "Battle", "Battle", "Shop", "Battle" };
 
     public static ArrayList<Place> initPlaces() {
         ArrayList<Place> places = new ArrayList<>();
 
-        Place town = new Place(0, "Town", new Enemy[] { new Enemy("Lapin", 10), new Enemy("Rat", 10),
-                new Enemy("Chat", 10), new Enemy("Chien", 10) });
+        Place town = new Place(0, "Town", new Enemy[] {
+            new Enemy("Wild Rabbit", 10),
+            new Enemy("Wild Rat", 10),
+            new Enemy("Wild Cat", 10),
+            new Enemy("Wild Dog", 10)
+        }, new String[] { "Hideout", "Hideout", "Battle", "Battle" });
 
-        Place forest = new Place(1, "Forest", new Enemy[] { new Enemy("Wolf", 25), new Enemy("Bear", 30),
-                new Enemy("Squirel", 10), new Enemy("WereWolf", 50) });
+        Place forest = new Place(1, "Forest", new Enemy[] {
+            new Enemy("Wolf", 25),
+            new Enemy("Bear", 30),
+            new Enemy("Squirel", 10),
+            new Enemy("WereWolf", 50)
+        }, new String[] { "Merchant", "Rest", "Battle", "Battle" });
 
-        Place castle = new Place(2, "Castle", new Enemy[] { new Enemy("Mimic", 50), new Enemy("Swordman", 50),
-                new Enemy("Spearman", 50), new Enemy("Axeman", 50), new Enemy("Batman", 80) });
+        Place castle = new Place(2, "Castle", new Enemy[] {
+            new Enemy("Mimic", 50),
+            new Enemy("Swordman", 50),
+            new Enemy("Spearman", 50)
+        }, new String[] { "Merchant", "Merchant", "Battle", "Battle" });
 
-        Place ending = new Place(3, "Final", new Enemy[]{ new Enemy("EVIL EMPEROR", 300)} );
+        Place throne = new Place(3, "Throne", new Enemy[]{ new Enemy("EVIL EMPEROR", 300)} );
 
         places.add(town);
         places.add(forest);
         places.add(castle);
-        places.add(ending);
+        places.add(throne);
         return places;
     }
 
@@ -69,7 +74,7 @@ public class GameLogic {
     }
 
     public static void printSeparator() {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             System.out.print("-");
         }
         System.out.println();
@@ -84,7 +89,7 @@ public class GameLogic {
     public static void toContinue() {
         System.out.println("\nEnter anything to continue ...");
         //System.out.println(scan.nextLine());
-        scan.next().compareTo("\r");
+        System.out.println(scan.next().compareTo("\r"));
     }
 
     public static void printMenu() {
@@ -157,8 +162,8 @@ public class GameLogic {
 
     public static void continueJourney() {
         checkAct();
-        if (initPlaces().get(place).name != "Final") {
-            randomEncounter();
+        if (place != 3) {
+            initPlaces().get(place).randomEncounter(player);
         }
     }
 
@@ -172,43 +177,41 @@ public class GameLogic {
      * TO MOVE
      */
 
-    public static void randomEncounter() {
-        int encounter = (int) (Math.random() * encounters.length);
-        switch (encounters[encounter]) {
-            case "Battle":
-                initPlaces().get(place).randomBattle(player);
-                break;
-            case "Rest":
-                player.rest();
-                break;
-            default:
-                shop();
-                break;
-        }
-    }
-
     public static void shop() {
         clearConsole();
-        int price = (int) (Math.random() * (10 + player.potions * 3) + 10 + player.potions);
-        int input = answer("You meet a mysterious stranger.\nHe offers you something:\n- Magic Potion: " + price + " gold.\nDo you want to buy one?", new String[] { "1 - Yes!", "2 - No thanks" });
+        System.out.println("You meet a mysterious stranger.\nHe offers you something:");
+        System.out.println("(" + player.gold + " left(s).)");
+        /**
+         * On cree les items que nous vend le marchand
+         */
+        Item[] items = {
+            new Item("Health Potion", (int) (Math.random() * (20 - 5 + 1) + 5), 1),
+            new Item("Herb", 5)
+        };
+        
+        String[] res = new String[items.length];
 
-        if (input == 1) {
-            clearConsole();
-            if (player.gold >= price) {
-                printHeading("You bought a magical potion for " + price + " gold.");
-                player.potions++;
-                player.gold -= price;
-            } else {
-                printHeading("You don't have enought gold to buy this...");
-            }
-            toContinue();
+        for (int i = 0; i < items.length; i++) {
+            printSeparator();
+            res[i] = i+1 + " - " + items[i].name + "!";
+            System.out.println(items[i].name + " for " + items[i].value +"!");
         }
+        printSeparator();
+
+        int input = answer("Do you want anything ?", res);
+        clearConsole();
+        if (player.gold >= items[input-1].value) {
+            printHeading("You bought a " + items[input-1].name + " for " + items[input-1].value + " gold.");
+            // On ajoute cet item au player
+            player.addItem(items[input-1]);
+            player.gold -= items[input-1].value;
+        } else {
+            printHeading("You don't have enought gold to buy this...");
+        }
+        toContinue();
     }
 
     public static void checkAct() {
-        // for (Enemy e : initPlaces().get(place).bestiaires) {
-        //     System.out.println(e);
-        // }
         if (player.xp >= 10 && place == 0) {
             place = 1;
             System.out.println("SECOND OUTRO");

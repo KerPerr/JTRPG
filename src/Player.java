@@ -1,12 +1,17 @@
+import java.util.ArrayList;
+
+import Items.Item;
+
 public class Player extends Character {
 
     int numAtkUpgrades, numDefUpgrades;
 
-    int gold, restLeft, potions;
-    // Item herb = new Item("Herb", Type.Consumable);
+    int gold, restLeft;
 
     String[] atkUpgrades = {"Strength", "Power", "Might", "Godlike"};
     String[] defUpgrades = {"Heavy Bones", "Stoneskin", "Scale Armor", "Holy Aura"};
+
+    ArrayList<Item> items = new ArrayList<>();
 
     public Player(String name) {
         super(name, 100, 0);
@@ -15,7 +20,8 @@ public class Player extends Character {
 
         this.gold = 5;
         this.restLeft = 1;
-        this.potions = 0;
+        items.add(new Item("Health Potion", 1));
+        items.add(new Item("Bombe", 1));
 
         chooseTrait();
     }
@@ -43,9 +49,12 @@ public class Player extends Character {
         GameLogic.printSeparator();
         System.out.println("XP: " + this.xp + "\tGold: " + this.gold);
         GameLogic.printSeparator();
-        System.out.println("# of Potions: " + this.potions);
-        GameLogic.printSeparator();
         System.out.println("# of Rests: " + this.restLeft);
+        GameLogic.printSeparator();
+        for (Item item : items) {
+            System.out.println("# of " + item.name + ": " + item.qte);
+            GameLogic.printSeparator();
+        }
         GameLogic.printSeparator();
 
         if (this.numAtkUpgrades > 0) {
@@ -80,17 +89,31 @@ public class Player extends Character {
         }
     }
 
-    // public void use(Item item) {
-    //     switch (item.type) {
-    //         case Consumable:
-    //             System.out.println("This a consumable item !");
-    //             break;
-    //         case Misc:
-    //             System.out.println("There is no use of it!");
-    //         default:
-    //             break;
-    //     }
-    // }
+    public Item getItem(String name) {
+        return items.stream().filter(i -> name.equals(i.name)).findAny().orElse(new Item(name));
+    }
+
+    public void addItem(Item i) {
+        Item item = getItem(i.name);
+        if(item.qte > 0) {
+            item.qte++;
+        } else {
+            items.add(item);
+        }
+    }
+    
+    public int use(Item item) {
+        int result;
+        Item i = getItem(item.name);
+        if(i.qte == 0) {
+            System.out.println("You don't have any " + i.name + "!");
+            result = 0;
+        } else {
+            i.qte--;
+            result = item.value;
+        }
+        return result;
+    }
 
     @Override
     public int attack() {
@@ -109,8 +132,8 @@ public class Player extends Character {
         super.setIsAlive(alive);
         if(!this.isAlive) {
             GameLogic.clearConsole();
-            GameLogic.printHeading("You died ...");
-            GameLogic.printHeading("You earned " + xp + " XP on your journey. Try to earn more next time.");
+            System.out.println("You died ...");
+            System.out.println("You earned " + xp + " XP on your journey. Try to earn more next time.");
         }
     }
 }

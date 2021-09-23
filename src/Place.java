@@ -1,8 +1,10 @@
+import Items.Item;
+
 public class Place {
     int index;
     String name;
     Enemy[] bestiaires;
-    String[] encounters = {"Battle", "Battle", "Battle", "Rest", "Shop"};
+    String[] encounters;
     Place[] places;
 
     public Place(int index, String name, Enemy[] bestiaires) {
@@ -11,17 +13,23 @@ public class Place {
         this.bestiaires = bestiaires;
     }
 
+    public Place(int index, String name, Enemy[] bestiaires, String[] encounters) {
+        this.index = index;
+        this.name = name;
+        this.bestiaires = bestiaires;
+        this.encounters = encounters;
+    }
+
     public void randomBattle(Player player) {
         Enemy e = bestiaires[(int) (Math.random() * bestiaires.length)];
         GameLogic.clearConsole();
         GameLogic.printHeading("You encountered an " + e.name + ". You'll have to fight it!");
-        GameLogic.toContinue();
-        
+
         while (player.isAlive) {
-            GameLogic.clearConsole();
             GameLogic.printHeading(e.name + "\nHP: " + e.hp + "/" + e.maxHp);
             GameLogic.printHeading(player.name + "\nHP: " + player.hp + "/" + player.maxHp);
-            int input = GameLogic.answer("Choose an action", new String[] {"1 - Fight", "2 - Use Potion", "3 - Run Away"});
+            int input = GameLogic.answer("Choose an action",
+                    new String[] { "1 - Fight", "2 - Use Items", "3 - Run Away" });
             if (input == 1) {
                 GameLogic.clearConsole();
                 GameLogic.printHeading("BATTLE");
@@ -36,10 +44,8 @@ public class Place {
                 System.out.println("The " + e.name + " dealt " + (enemyDamage < 0 ? 0 : enemyDamage) + " damage to you.");
                 player.receive(enemyDamage);
                 GameLogic.toContinue();
-
-                if (!player.isAlive) {
-                    break;
-                } else if (!e.isAlive) {
+                
+                if (!e.isAlive) {
                     GameLogic.clearConsole();
                     GameLogic.printHeading("You defeated the " + e.name + "!");
                     player.xp += e.xp;
@@ -59,14 +65,26 @@ public class Place {
                 }
             } else if (input == 2) {
                 GameLogic.clearConsole();
-                // if(player.herb.nb > 0) {
-                //     player.use(player.herb);
-                // }
-                if (player.potions > 0 && player.hp < player.maxHp) {
-                    input = GameLogic.answer("Do you want to drink a potion? (" + player.potions + " left).", new String[] {"1 - Yes", "2 - No, maybe later"});
+                /**
+                 * Make an item selection list based on my consumables
+                 */
+                /*
+                ArrayList<Consumable> consos = new ArrayList<>();
+                for (Item i : player.items) {
+                    if(i instanceof Consumable) {
+                        consos.add((Consumable) i);
+                    }
+                }
+                input = GameLogic.answer("Do you want to use an item?", );
+                */
+                Item item = player.getItem("Health Potion");
+                if (item.qte > 0 && player.hp < player.maxHp) {
+                    input = GameLogic.answer("Do you want to drink a potion? (" + item.qte + " left).",
+                            new String[] { "1 - Yes", "2 - No, maybe later" });
                     if (input == 1) {
                         player.hp = player.maxHp;
-                        GameLogic.printHeading("You drank a magic potion. It restored your health back to " + player.maxHp);
+                        player.use(item);
+                        GameLogic.printHeading( "You drank a magic potion. It restored your health back to " + player.hp);
                         GameLogic.toContinue();
                     }
                 } else {
@@ -95,6 +113,30 @@ public class Place {
                     GameLogic.toContinue();
                 }
             }
+        }
+    }
+
+    public void randomEncounter(Player player) {
+        int encounter = (int) (Math.random() * encounters.length);
+        switch (encounters[encounter]) {
+            case "Battle":
+                this.randomBattle(player);
+                break;
+            case "Rest":
+                player.rest();
+                break;
+            case "Merchant":
+                GameLogic.shop();
+                break;
+            case "Hideout":
+                int loot = (int) (Math.random() * (5 - 1 + 1) + 1);
+                GameLogic.clearConsole();
+                GameLogic.printHeading("You discovered an hideout. You found " + loot + " gold!");
+                player.gold += loot;
+                GameLogic.toContinue();
+            default:
+                System.out.println("Something went wrong ~");
+                break;
         }
     }
 }
