@@ -59,6 +59,9 @@ public class Place {
                 }
             } else if (input == 2) {
                 GameLogic.clearConsole();
+                // if(player.herb.nb > 0) {
+                //     player.use(player.herb);
+                // }
                 if (player.potions > 0 && player.hp < player.maxHp) {
                     input = GameLogic.answer("Do you want to drink a potion? (" + player.potions + " left).", new String[] {"1 - Yes", "2 - No, maybe later"});
                     if (input == 1) {

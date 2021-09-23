@@ -3,6 +3,7 @@ public class Player extends Character {
     int numAtkUpgrades, numDefUpgrades;
 
     int gold, restLeft, potions;
+    // Item herb = new Item("Herb", Type.Consumable);
 
     String[] atkUpgrades = {"Strength", "Power", "Might", "Godlike"};
     String[] defUpgrades = {"Heavy Bones", "Stoneskin", "Scale Armor", "Holy Aura"};
@@ -79,6 +80,18 @@ public class Player extends Character {
         }
     }
 
+    // public void use(Item item) {
+    //     switch (item.type) {
+    //         case Consumable:
+    //             System.out.println("This a consumable item !");
+    //             break;
+    //         case Misc:
+    //             System.out.println("There is no use of it!");
+    //         default:
+    //             break;
+    //     }
+    // }
+
     @Override
     public int attack() {
         // TODO Auto-generated method stub
@@ -94,7 +107,7 @@ public class Player extends Character {
     @Override
     public void setIsAlive(boolean alive) {
         super.setIsAlive(alive);
-        if(!alive) {
+        if(!this.isAlive) {
             GameLogic.clearConsole();
             GameLogic.printHeading("You died ...");
             GameLogic.printHeading("You earned " + xp + " XP on your journey. Try to earn more next time.");

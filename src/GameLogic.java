@@ -1,6 +1,13 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+// enum Type {
+//     Misc,
+//     Armor,
+//     Weapon,
+//     Consumable
+// }
+
 public class GameLogic {
     static Scanner scan = new Scanner(System.in);
 
@@ -76,7 +83,8 @@ public class GameLogic {
 
     public static void toContinue() {
         System.out.println("\nEnter anything to continue ...");
-        System.out.println(scan.nextLine());
+        //System.out.println(scan.nextLine());
+        scan.next().compareTo("\r");
     }
 
     public static void printMenu() {
