@@ -10,16 +10,21 @@ public abstract class Character {
         this.hp = maxHp;
     }
 
+    public void setAlive(boolean isAlive) {
+        this.isAlive = isAlive;
+    }
+
     public abstract int attack();
     public abstract int defend();
 
-    public void receive(int damage) {
+    public int receive(int damage) {
         if(damage < 0) {
             damage = 0;
         }
-        this.hp -= damage;
+        this.hp -= damage; // < 0 ? 0 : damage;
         if(this.hp <= 0) {
-            this.isAlive = false;
+            this.setAlive(false);
         }
+        return damage;
     };
 }

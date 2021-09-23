@@ -4,8 +4,8 @@ public class Player extends Character {
 
     int gold, restLeft, potions;
 
-    String[] atkUpgrades = {"Strength", "Power", "Might", "Godlike"};
-    String[] defUpgrades = {"Heavy Bones", "Stoneskin", "Scale Armor", "Holy Aura"};
+    String[] atkUpgrades = { "Strength", "Power", "Might", "Godlike" };
+    String[] defUpgrades = { "Heavy Bones", "Stoneskin", "Scale Armor", "Holy Aura" };
 
     public Player(String name) {
         super(name, 100, 0);
@@ -19,6 +19,16 @@ public class Player extends Character {
         chooseTrait();
     }
 
+    @Override
+    public void setAlive(boolean isAlive) {
+        super.setAlive(isAlive);
+        if (!this.isAlive) {
+            GameLogic.clearConsole();
+            GameLogic.printHeading("You died ...");
+            GameLogic.printHeading("You earned " + xp + " XP on your journey. Try to earn more next time.");
+        }
+    }
+
     public void chooseTrait() {
         GameLogic.clearConsole();
         GameLogic.printHeading("Choose a trait");
@@ -26,7 +36,7 @@ public class Player extends Character {
         System.out.println("(2) " + defUpgrades[numDefUpgrades]);
         int input = GameLogic.readInt("-> ", 2);
         GameLogic.clearConsole();
-        if(input == 1) {
+        if (input == 1) {
             GameLogic.printHeading("You choose " + atkUpgrades[numAtkUpgrades] + "!");
             numAtkUpgrades++;
         } else {
@@ -57,17 +67,18 @@ public class Player extends Character {
 
     public void rest() {
         GameLogic.clearConsole();
-        if(this.restLeft >= 1) {
+        if (this.restLeft >= 1) {
             GameLogic.printHeading("Do you want to take a  rest? (" + this.restLeft + " rest(s) left).");
             System.out.println("(1) Yes\n(2) No, not now.");
 
             int input = GameLogic.readInt("-> ", 2);
-            if(input == 1) {
+            if (input == 1) {
                 GameLogic.clearConsole();
-                if(this.hp < this.maxHp) {
-                    int hpRestored = (int) (Math.random() * (this.xp/4 + 1) + 10);
+                if (this.hp < this.maxHp) {
+                    int hpRestored = (int) (Math.random() * (this.xp / 4 + 1) + 10);
                     this.hp += hpRestored;
-                    if(this.hp > this.maxHp) this.hp = this.maxHp;
+                    if (this.hp > this.maxHp)
+                        this.hp = this.maxHp;
                     System.out.println("You took a rest and restored up to " + hpRestored + " health.");
                     System.out.println("You're now at " + this.hp + "/" + this.maxHp + " health.");
                     this.restLeft--;
@@ -82,12 +93,14 @@ public class Player extends Character {
     @Override
     public int attack() {
         // TODO Auto-generated method stub
-        return (int) (Math.random()*(xp/4 + numAtkUpgrades*3 + 3) + xp/10 + numAtkUpgrades*2 + numDefUpgrades + 1);
+        return (int) (Math.random() * (xp / 4 + numAtkUpgrades * 3 + 3) + xp / 10 + numAtkUpgrades * 2 + numDefUpgrades
+                + 1);
     }
 
     @Override
     public int defend() {
         // TODO Auto-generated method stub
-        return (int) (Math.random()*(xp/4 + numDefUpgrades*3 + 3) + xp/10 + numDefUpgrades*2 + numAtkUpgrades + 1);
-    }    
+        return (int) (Math.random() * (xp / 4 + numDefUpgrades * 3 + 3) + xp / 10 + numDefUpgrades * 2 + numAtkUpgrades
+                + 1);
+    }
 }
