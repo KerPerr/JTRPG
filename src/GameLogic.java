@@ -17,7 +17,7 @@ public class GameLogic {
         Place town = new Place("Town", 0, new Enemy[] {
             new Enemy("Rat", 10),
             new Enemy("Little boy",10)
-        }, new String[]{"Shop", "Chest", "Battle"});
+        }, new String[]{"Battle", "Battle", "Battle"});
 
         Place forest = new Place("Forest", 1, new Enemy[] {
             new Enemy("Wolf", 20),
@@ -166,19 +166,21 @@ public class GameLogic {
     public static void shop() {
         clearConsole();
         printHeading("You meet a mysterious stranger.\nHe offers you something:");
-        Item potions = player.items.stream()
-        .filter(i -> "Potion HP".equals(i.name))
-        .findAny()
-        .orElse(null);
+        Item potions = player.getItem("Potion HP");
         int price = (int) (Math.random() * (10 + potions.quantite * 3) + 10 + potions.quantite);
-        System.out.println("- Magic Potion: " + price + " gold.");
+        System.out.println("- " + potions.name + ": " + price + " gold.");
         printSeparator(15);
         int input = answer("Do you want to buy one?", new String[] { "(1) Yes!", "(2) No thanks" });
         if (input == 1) {
             clearConsole();
             if (player.gold >= price) {
                 printHeading("You bought a magical potion for " + price + " gold.");
-                potions.quantite++;
+                if(potions.quantite == 0) {
+                    potions.quantite = 1;
+                    player.items.add(potions);
+                } else {
+                    potions.quantite++;
+                }
                 player.gold -= price;
             } else {
                 printHeading("You don't have enought gold to buy this...");

@@ -70,7 +70,7 @@ public class Place {
                 GameLogic.clearConsole();
                 Item potions = player.getItem("Potion HP");
                 if(potions.quantite > 0 && player.hp < player.maxHp) {
-                    GameLogic.printHeading("Do you want to drink a potion? (" + player.getItem("Potion HP").quantite + " left).");
+                    GameLogic.printHeading("Do you want to drink a potion? (" + potions.quantite + " left).");
                     System.out.println("(1) Yes\n(2) No, maybe later");
                     input = GameLogic.readInt("-> ", 2);
                     if(input == 1) {

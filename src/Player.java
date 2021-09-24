@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 
-import Items.Consomable;
-import Items.Heal;
 import Items.Item;
 
 public class Player extends Character {
@@ -22,7 +20,7 @@ public class Player extends Character {
 
         this.gold = 5;
         this.restLeft = 1;
-        //this.items.add(new Consomable("Potion HP", new Heal(), 1));
+        this.items.add(new Item("Potion HP", 1));
 
         chooseTrait();
     }
@@ -58,7 +56,7 @@ public class Player extends Character {
         return items.stream()
         .filter(i -> name.equals(i.name))
         .findAny()
-        .orElse(null);
+        .orElse(new Item(name, 0));
     }
 
     public void getInformation() {
@@ -67,16 +65,14 @@ public class Player extends Character {
         GameLogic.printSeparator(20);
         System.out.println("XP: " + this.xp + "\tGold: " + this.gold);
         GameLogic.printSeparator(20);
-        Item potions = items.stream()
-        .filter(i -> "Potion HP".equals(i.name))
-        .findAny()
-        .orElse(null);
-
-        System.out.println("# of Potions: " + potions.quantite);
-        GameLogic.printSeparator(20);
         System.out.println("# of Rests: " + this.restLeft);
         GameLogic.printSeparator(20);
 
+        for (Item i : items) {
+            System.out.println("# of "+ i.name +": " + i.quantite);
+            GameLogic.printSeparator(20);
+        }
+    
         if (this.numAtkUpgrades > 0) {
             System.out.println("Offensive trait: " + this.atkUpgrades[this.numAtkUpgrades - 1]);
         }
