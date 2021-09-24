@@ -67,6 +67,9 @@ public class Place {
                     break;
                 }
             } else if (input == 2) {
+                /**
+                 * Proposer une selection des items disponibles sur player
+                 */
                 GameLogic.clearConsole();
                 Item potions = player.getItem("Potion HP");
                 if(potions.quantite > 0 && player.hp < player.maxHp) {
@@ -77,7 +80,10 @@ public class Place {
                         player.hp = player.maxHp;
                         GameLogic.clearConsole();
                         potions.quantite--;
-                        GameLogic.printHeading("You drank a magic potion. It restored your health back to " + player.maxHp);
+                        if(potions.quantite == 0) {
+                            player.items.remove(potions);
+                        }
+                        GameLogic.printHeading("You drank a " + potions.name + ". It restored your health back to " + player.maxHp);
                         GameLogic.toContinue();
                     }
                 } else {

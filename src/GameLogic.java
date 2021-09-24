@@ -17,7 +17,7 @@ public class GameLogic {
         Place town = new Place("Town", 0, new Enemy[] {
             new Enemy("Rat", 10),
             new Enemy("Little boy",10)
-        }, new String[]{"Battle", "Battle", "Battle"});
+        }, new String[]{"Battle", "Shop", "Shop"});
 
         Place forest = new Place("Forest", 1, new Enemy[] {
             new Enemy("Wolf", 20),
