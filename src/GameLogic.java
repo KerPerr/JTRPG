@@ -164,29 +164,41 @@ public class GameLogic {
      */
 
     public static void shop() {
+        Item[] shop = {
+            new Item("Potion HP", 0),
+            new Item("Bomb", 0)
+        };
         clearConsole();
         printHeading("You meet a mysterious stranger.\nHe offers you something:");
-        Item potions = player.getItem("Potion HP");
-        int price = (int) (Math.random() * (10 + potions.quantite * 3) + 10 + potions.quantite);
-        System.out.println("- " + potions.name + ": " + price + " gold.");
+        String[] res = new String[shop.length+1];
+        for (int i = 0; i < shop.length; i++) {
+            shop[i].setValue((int) (Math.random() * (10 + shop[i].quantite * 3) + 10 + shop[i].quantite));
+            System.out.println("- " + shop[i].name + ": " + shop[i].value + " gold.");
+            res[i] = i+1 + " - " + shop[i].name;
+        }
         printSeparator(15);
-        int input = answer("Do you want to buy one?", new String[] { "(1) Yes!", "(2) No thanks" });
-        if (input == 1) {
-            clearConsole();
+        res[res.length-1] = res.length + " - No, thanks !";
+        int input = answer("Do you want to buy something?", res);
+        if(input == res.length-1) {
+            System.out.println("Too expensive my dear son !");
+        } else {
+            int price = shop[input -1].value;
             if (player.gold >= price) {
+                System.out.println("You bought " + shop[input-1].name);
+                Item item = player.getItem(shop[input-1].name);
                 printHeading("You bought a magical potion for " + price + " gold.");
-                if(potions.quantite == 0) {
-                    potions.quantite = 1;
-                    player.items.add(potions);
+                if(item.quantite == 0) {
+                    item.quantite = 1;
+                    player.items.add(item);
                 } else {
-                    potions.quantite++;
+                    item.quantite++;
                 }
                 player.gold -= price;
             } else {
                 printHeading("You don't have enought gold to buy this...");
             }
-            toContinue();
         }
+        toContinue();
     }
 
     public static void checkAct() {
