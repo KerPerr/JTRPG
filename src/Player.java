@@ -99,6 +99,18 @@ public class Player extends Character {
         if (this.numDefUpgrades > 0) {
             System.out.println("Defensive trait: " + this.defUpgrades[this.numDefUpgrades - 1]);
         }
+
+        int input = GameLogic.answer("Do you want to equip something", new String[] {"1 - Weapon.", "2 - Armor.", "3 - No."});
+        GameLogic.printHeading("Equipement");
+        GameLogic.printSeparator(30);
+        if(input == 1) {
+            System.out.println(equipement.getWeapon().name + " : Equiped");
+            /**
+             * BOUCLE SUR ITEMS POUR AFFICHER QUE LES WEAPONS
+             */
+        } else if (input == 2) {
+            
+        }
     }
 
     public void rest() {
