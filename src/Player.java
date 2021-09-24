@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 
+import Items.Armor;
+import Items.Consumable;
 import Items.Item;
+import Items.Weapon;
 
 public class Player extends Character {
 
@@ -12,6 +15,7 @@ public class Player extends Character {
     String[] defUpgrades = { "Heavy Bones", "Stoneskin", "Scale Armor", "Holy Aura" };
 
     ArrayList<Item> items = new ArrayList<>();
+    Equipement equipement;
 
     public Player(String name) {
         super(name, 100, 0);
@@ -20,7 +24,7 @@ public class Player extends Character {
 
         this.gold = 5;
         this.restLeft = 1;
-        this.items.add(new Item("Potion HP", 1));
+        this.items.add(new Consumable("Potion HP", 1));
 
         chooseTrait();
     }
@@ -59,6 +63,20 @@ public class Player extends Character {
         .orElse(new Item(name, 0));
     }
 
+    public void setWeapon(Weapon weapon) {
+        if(equipement.getWeapon() != null) {
+            items.add(equipement.weapon);
+        }
+        equipement.setWeapon(weapon);
+    }
+
+    public void setArmor(Armor armor) {
+        if(equipement.getArmor() != null) {
+            items.add(equipement.armor);
+        }
+        equipement.setArmor(armor);
+    }
+
     public void getInformation() {
         GameLogic.printHeading("CHARACTER INFO");
         System.out.println(this.name + "\tHP: " + this.hp + "/" + this.maxHp);
@@ -69,8 +87,10 @@ public class Player extends Character {
         GameLogic.printSeparator(20);
 
         for (Item i : items) {
-            System.out.println("# of "+ i.name +": " + i.quantite);
-            GameLogic.printSeparator(20);
+            if(i instanceof Consumable) {
+                System.out.println("# of "+ i.name +": " + i.quantite);
+                GameLogic.printSeparator(20);
+            }
         }
     
         if (this.numAtkUpgrades > 0) {

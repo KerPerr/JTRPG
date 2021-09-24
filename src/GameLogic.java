@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import Items.Armor;
 import Items.Item;
 
 public class GameLogic {
@@ -17,7 +18,7 @@ public class GameLogic {
         Place town = new Place("Town", 0, new Enemy[] {
             new Enemy("Rat", 10),
             new Enemy("Little boy",10)
-        }, new String[]{"Battle", "Shop", "Shop"});
+        }, new String[]{"Battle", "Shop", "Chest"});
 
         Place forest = new Place("Forest", 1, new Enemy[] {
             new Enemy("Wolf", 20),
@@ -166,7 +167,8 @@ public class GameLogic {
     public static void shop() {
         Item[] shop = {
             new Item("Potion HP", 0),
-            new Item("Bomb", 0)
+            new Item("Bomb", 0),
+            new Armor("Jacket")
         };
         clearConsole();
         printHeading("You meet a mysterious stranger.\nHe offers you something:");
@@ -179,14 +181,14 @@ public class GameLogic {
         printSeparator(15);
         res[res.length-1] = res.length + " - No, thanks !";
         int input = answer("Do you want to buy something?", res);
-        if(input == res.length-1) {
+        if(input == res.length) {
             System.out.println("Too expensive my dear son !");
         } else {
             int price = shop[input -1].value;
             if (player.gold >= price) {
                 System.out.println("You bought " + shop[input-1].name);
                 Item item = player.getItem(shop[input-1].name);
-                printHeading("You bought a magical potion for " + price + " gold.");
+                printHeading("You bought a " + item.name + " for " + price + " gold.");
                 if(item.quantite == 0) {
                     item.quantite = 1;
                     player.items.add(item);
